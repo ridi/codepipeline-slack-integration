@@ -32,7 +32,8 @@ def find_slack_message_for_update(pipeline_execution_id):
 
 
 def find_channel_id(channel_name):
-    res = slack_client.api_call("channels.list", exclude_archived=1)
+    # 최신 메세지가 가장 위쪽에 있게 줌
+    res = slack_client.api_call("conversations.list", exclude_archived=1, limit=1000)
 
     if 'error' in res:
         if not isinstance(res['error'], str):
@@ -51,7 +52,7 @@ def find_channel_id(channel_name):
 
 
 def get_slack_messages_from_channel(channel_id):
-    res = slack_client.api_call('channels.history', channel=channel_id)
+    res = slack_client.api_call('conversations.history', channel=channel_id, limit=100)
 
     if 'error' in res:
         if not isinstance(res['error'], str):
