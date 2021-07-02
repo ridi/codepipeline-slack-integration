@@ -1,5 +1,5 @@
-org: strutive07
-app: codepipeline-slack-notifier
+# org: strutive07
+# app: codepipeline-slack-notifier
 # Welcome to Serverless!
 #
 # This file is the main config file for your service.
@@ -15,26 +15,25 @@ app: codepipeline-slack-notifier
 
 service: codepipeline-slack
 
-environment:
-  SLS_DEBUG: "*"
-
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.8
   region: ap-northeast-2
-  stage: ${env:stage}
   deploymentBucket: ${env:s3_bucket}
+  lambdaHashingVersion: 20201221
 
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "codepipeline:Get*"
-        - "codepipeline:List*"
-      Resource: '*'
-    - Effect: "Allow"
-      Action:
-        - "codebuild:Get*"
-      Resource: '*'
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "codepipeline:Get*"
+            - "codepipeline:List*"
+          Resource: '*'
+        - Effect: "Allow"
+          Action:
+            - "codebuild:Get*"
+          Resource: '*'
 
   environment:
     SLACK_TOKEN: ${env:SLACK_TOKEN}
@@ -74,5 +73,5 @@ custom:
   pythonRequirements:
     fileName: requirements.txt
     dockerizePip: true
-  dotenv:
-    path: ./.env
+
+useDotenv: true
