@@ -59,7 +59,7 @@ def get_phase_status(phase):
 
 
 def get_phase_type(phase):
-    if 'phase-type' in phase: 
+    if 'phase-type' in phase:
         return phase['phase-type']
     else:
         return None

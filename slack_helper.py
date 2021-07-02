@@ -5,26 +5,27 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-slack_client = SlackClient(os.getenv("SLACK_TOKEN"))
-sc_bot = SlackClient(os.getenv("SLACK_BOT_TOKEN"))
+slack_client = SlackClient(os.getenv("SLACK_BOT_TOKEN"))
+# sc_bot = SlackClient(os.getenv("SLACK_BOT_TOKEN"))
 SLACK_CHANNEL = os.getenv("SLACK_CHANNEL", "builds_test")
 SLACK_BOT_NAME = os.getenv("SLACK_BOT_NAME", "PipelineBot")
 SLACK_BOT_ICON = os.getenv("SLACK_BOT_ICON", ":robot_face:")
 
-
 def find_slack_message_for_update(pipeline_execution_id):
     channel_id = find_channel_id(SLACK_CHANNEL)
+    slack_bot_info = slack_client.api_call('auth.test')
+    slack_bot_id = slack_bot_info['user_id']
     slack_messages = get_slack_messages_from_channel(channel_id=channel_id)
 
     for message in slack_messages:
-        if message.get('username', '') != SLACK_BOT_NAME:
+        if message.get('user', '') != slack_bot_id:
             continue
 
         attachments = message.get('attachments', [])
         for attachment in attachments:
             if 'footer' not in attachment:
                 continue
-                
+
             if attachment['footer'] == pipeline_execution_id:
                 return message
 
@@ -52,7 +53,7 @@ def find_channel_id(channel_name):
 
 
 def get_slack_messages_from_channel(channel_id):
-    res = slack_client.api_call('conversations.history', channel=channel_id, limit=100)
+    res = slack_client.api_call('conversations.history', channel=channel_id, limit=10)
 
     if 'error' in res:
         if not isinstance(res['error'], str):

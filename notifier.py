@@ -26,12 +26,17 @@ logger.setLevel(logging.INFO)
 def run(event, context):
     logger.info('event received.')
     logger.info(json.dumps(event, indent=2))
+    if event['detail-type'] == 'AWS API Call via CloudTrail':
+        logger.info('skip AWS API Call via CloudTrail')
+        return
     if event['source'] == "aws.codepipeline":
         process_code_pipeline(event)
     elif event['source'] == "aws.codebuild":
         process_code_build(event)
-    elif event['source'] == "aws.ecs":
-        alarm_task(event)
+    # elif event['source'] == "aws.codedeploy":
+    #     process_code_deploy(event)
+    # elif event['source'] == "aws.ecs":
+        # alarm_task(event)
 
 def process_code_pipeline(event):
     pipeline_execution_id, pipeline_name = get_pipeline_metadata(event)

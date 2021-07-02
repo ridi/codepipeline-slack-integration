@@ -26,21 +26,24 @@ logger.setLevel(logging.INFO)
 SLACK_IN_PROGRESS_EMOJI = os.getenv("SLACK_IN_PROGRESS_EMOJI", ":building_contruction:")
 
 STATE_ICONS = {
-  'STARTED': SLACK_IN_PROGRESS_EMOJI,
-  'SUCCEEDED': ":white_check_mark:",
-  'RESUMED': "",
-  'FAILED': ":x:",
   'CANCELED': ":no_entry:",
-  'SUPERSEDED': ""
+  'FAILED': ":x:",
+  'RESUMED': "",
+  'STARTED': SLACK_IN_PROGRESS_EMOJI,
+  'STOPPED': ":x:",
+  'SUCCEEDED': ":white_check_mark:",
+  'SUPERSEDED': "",
 }
 
 STATE_COLORS = {
-    'DEFAULT': "#eee",
-    'STARTED': "#9E9E9E",
-    'SUCCEEDED': "good",
-    'RESUMED': "",
-    'FAILED': "danger",
     'CANCELED': "",
+    'FAILED': "danger",
+    'RESUMED': "",
+    'STARTED': "#9E9E9E",
+    'STOPPED': "#f00",
+    'STOPPING': "#f00",
+    'DEFAULT': "#eee",
+    'SUCCEEDED': "good",
     'SUPERSEDED': ""
 }
 
