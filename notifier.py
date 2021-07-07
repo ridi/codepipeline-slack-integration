@@ -3,7 +3,7 @@ import json
 
 from event_parser import (
     get_pipeline_metadata,
-    get_codebuild_from_pipeline_metadata,
+    get_pipeline_metadata_from_codebuild,
     is_codebuild_phases_updatable,
     get_codebuild_phases,
 )
@@ -52,7 +52,7 @@ def process_code_pipeline(event):
 
 
 def process_code_build(event):
-    pipeline_name, build_id, build_project_name = get_codebuild_from_pipeline_metadata(event)
+    pipeline_name, build_id, build_project_name = get_pipeline_metadata_from_codebuild(event)
     stage_name, pipeline_execution_id, action_state = find_pipeline_from_build(pipeline_name, build_id)
 
     if not pipeline_execution_id:

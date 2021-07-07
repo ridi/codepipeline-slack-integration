@@ -26,7 +26,7 @@ def get_pipeline_states(event):
     return event['detail']['state']
 
 
-def get_codebuild_from_pipeline_metadata(event):
+def get_pipeline_metadata_from_codebuild(event):
     detail = event['detail']
     pipeline_name = detail['additional-information']['initiator'][13:]
     build_id = detail['build-id']
