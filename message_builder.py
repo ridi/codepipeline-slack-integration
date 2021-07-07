@@ -3,6 +3,7 @@ import os
 import logging
 
 from event_parser import (
+    get_pipeline_metadata,
     get_pipeline_stages,
     get_pipeline_states,
     is_pipeline_stage_state_update,
@@ -18,6 +19,9 @@ from slack_helper import (
     SLACK_CHANNEL,
     update_message,
     send_message,
+)
+from github_helper import (
+    find_github_info
 )
 
 logger = logging.getLogger()
@@ -103,6 +107,13 @@ CODEBUILD_PHASE_DEPENDENCY = {
     },
 }
 
+GITHUB_INFO_DISPLAY_ORDER = [
+    'repo',
+    'branch',
+    'author',
+    'commit_message',
+    'commit_link',
+]
 
 class MessageBuilder:
     pipeline_name = None
@@ -153,6 +164,17 @@ class MessageBuilder:
 
             field_refernece['value'] = "\t".join([f"{icon} {stage}" for stage, icon in stages_dict.items()])
             self.update_field(index, field_refernece)
+
+            # add github info
+            logger.info('PIPELINE STAGE UPDATE')
+            if current_stage == 'Source':
+                logger.info('SOURCE UPDATE')
+                pipeline_execution_id, pipeline_name = get_pipeline_metadata(event)
+                infos = find_github_info(pipeline_execution_id, pipeline_name)
+                for info in infos:
+                    idx, field = self.get_or_create_field(info['name'])
+                    field['value'] = "\n".join([f"{key}: {info[key]}" for key in GITHUB_INFO_DISPLAY_ORDER])
+                    # self.update_field(idx, field)
 
         if self.fields[0]['value'] == 'SUCCEEDED':
             self.complete_pipeline()
