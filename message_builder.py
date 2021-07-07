@@ -132,7 +132,7 @@ class MessageBuilder:
             self.fields = attachments['fields']
             self.actions = attachments.get('actions', [])
             self.message_id = message['ts']
-            logger.info(f'find exist message. message id: {self.message_id}')
+            logger.info(f'found existing message. message id: {self.message_id}')
         else:
             self.fields = [
                 {

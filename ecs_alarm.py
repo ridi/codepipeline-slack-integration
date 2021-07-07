@@ -18,7 +18,7 @@ def alarm_task(event):
 
     if 'deployment' in task_stopped_reason:
         return
-    
+
     else:
         channel_id = find_channel_id(SLACK_CHANNEL)
         cluster_name, group, task_id, task_definition_name = get_ecs_task_infos(event)
@@ -33,13 +33,13 @@ def alarm_task(event):
 
         container_infos = get_ecs_container_infos(event)
         container_info_message = "{:^20} {:^20}\n".format('name', 'reason')
-        
+
         for container_info in container_infos:
             container_info_message += "{:^20} {:^20}\n".format(
                 container_info['name'],
                 container_info['reason'],
             )
-            
+
         fields = [
             {
                 "title": ':scream: Task abnormal termination :scream:',
@@ -78,7 +78,7 @@ def alarm_task(event):
                 "text": "Task details",
                 "url": link
         }]
-        
+
         message = [
             {
                 "fields": fields,
@@ -91,4 +91,3 @@ def alarm_task(event):
             channel_id,
             message
         )
-
