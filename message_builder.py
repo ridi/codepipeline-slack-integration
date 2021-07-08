@@ -179,6 +179,11 @@ class MessageBuilder:
         if self.fields[0]['value'] == 'SUCCEEDED':
             self.complete_pipeline()
 
+    def update_deploy_task_definition(self, task_def):
+        index, field = self.get_or_create_field('Task Definition', short=True)
+        field['value'] = task_def
+        self.update_field(index, field)
+
     def update_build_stage_info(self, stage_name, phases, action_states, build_project_name):
         external_execution_url = action_states['latestExecution']['externalExecutionUrl']
 

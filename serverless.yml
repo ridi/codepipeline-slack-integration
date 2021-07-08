@@ -62,6 +62,7 @@ functions:
             source:
               - aws.codepipeline
               - aws.codebuild
+              - aws.codedeploy
 
   ecs-notifier:
       handler: notifier.run

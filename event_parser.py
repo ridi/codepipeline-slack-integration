@@ -1,3 +1,4 @@
+import re
 import logging
 
 logger = logging.getLogger()
@@ -70,6 +71,31 @@ def get_phase_duration(phase):
         return phase['duration-in-seconds']
     else:
         return None
+
+
+def is_event_with_deployment_id(event):
+    if event['source'] == 'aws.codedeploy':
+        if event['detail'].get('eventName') == 'CreateDeployment':
+            return True
+    if event['source'] == 'aws.codepipeline' and event['detail-type'] == 'CodePipeline Action Execution State Change':
+        if event['detail']['stage'] == 'Deploy' and event['detail']['state'] == 'SUCCEEDED':
+            if event['detail']['execution-result']:
+                return True
+    return False
+
+
+def get_deployment_info_from_codedeploy(event):
+    deployment_id = event['detail']['responseElements'].get('deploymentId')
+    app_spec = event['detail']['requestParameters']['revision']['string']['content']
+    pattern = re.compile(r'TaskDefinition: [\w|:\-\/]+')
+    task_def = pattern.findall(app_spec)[0].split('/')[-1]
+    return deployment_id, task_def
+
+
+def get_deployment_info_from_codepipeline(event):
+    deployment_id = event['detail']['execution-result'].get('external-execution-id')
+    pipeline_id = event['detail']['execution-id']
+    return deployment_id, pipeline_id
 
 
 def get_ecs_task_stopped_reason(event):
