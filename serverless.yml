@@ -34,6 +34,14 @@ provider:
           Action:
             - "codebuild:Get*"
           Resource: '*'
+        - Effect: "Allow"
+          Action:
+            - "codedeploy:Get*"
+          Resource: '*'
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:*"
+          Resource: ${env:DYNAMODB_ARN}
 
   environment:
     SLACK_TOKEN: ${env:SLACK_TOKEN}
