@@ -188,16 +188,17 @@ class MessageBuilder:
         external_execution_url = action_states['latestExecution']['externalExecutionUrl']
 
         if external_execution_url:
-            self.get_or_create_action(f"Dashboard:{build_project_name}", external_execution_url)
+            self.get_or_create_action("Build info", external_execution_url)
 
-        build_field_name = MessageBuilder.create_codebuild_name_from_pipeline_stage(
-            stage_name, build_project_name
-        )
+        if os.getenv('SHOW_BUILD_PHASE') == 'True':
+            build_field_name = MessageBuilder.create_codebuild_name_from_pipeline_stage(
+                stage_name, build_project_name
+            )
 
-        index, field = self.get_or_create_field(build_field_name, short=False)
-        self.create_phase_context(phases)
-        field['value'] = self.complete_create_codebuild_progress_info(phases, build_field_name)
-        self.update_field(index, field)
+            index, field = self.get_or_create_field(build_field_name, short=False)
+            self.create_phase_context(phases)
+            field['value'] = self.complete_create_codebuild_progress_info(phases, build_field_name)
+            self.update_field(index, field)
 
     def create_phase_context(self, phases):
         context = []
