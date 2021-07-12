@@ -180,8 +180,13 @@ class MessageBuilder:
             self.complete_pipeline()
 
     def update_deploy_task_definition(self, task_def):
+        task_def_name = task_def.split(':')[0]
+        task_def_revision = task_def.split(':')[1]
+        region = os.getenv("AWS_REGION", "ap-northeast-2")
+        task_def_link = f"https://{region}.console.aws.amazon.com/ecs/home?region={region}#/taskDefinitions/{task_def_name}/{task_def_revision}"
+
         index, field = self.get_or_create_field('Task Definition', short=True)
-        field['value'] = task_def
+        field['value'] = f"<{task_def_link}|{task_def}>"
         self.update_field(index, field)
 
     def update_build_stage_info(self, stage_name, phases, action_states, build_project_name):
