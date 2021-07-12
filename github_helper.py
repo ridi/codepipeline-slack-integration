@@ -29,11 +29,13 @@ def find_github_info(pipeline_execution_id, pipeline_name):
         info = [x for x in infos if x['name'] == revision['name']][0]
         commit_message = json.loads(revision['revisionSummary'])['CommitMessage']
         info['commit_message'] = commit_message
-        info['commit_link'] = revision['revisionUrl']
+
+        query = parse_qs(urlparse(revision['revisionUrl']).query)
+        info['commit_link'] = f"https://github.com/{query.get('FullRepositoryId')[0]}/commit/{query.get('Commit')[0]}"
 
     # author
     for info in infos:
-        sha = parse_qs(urlparse(info['commit_link']).query).get('Commit')[0]
+        sha = info['commit_link'].split('/')[-1]
         author = github_client.get_repo(info['repo']).get_commit(sha=sha).author
         info['author'] = author.name or author.login
 
