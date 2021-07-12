@@ -70,7 +70,6 @@ def update_message(channel_id, message_id, attachments):
         "chat.update",
         channel=channel_id,
         ts=message_id,
-        icon_emoji=SLACK_BOT_ICON,
         username=SLACK_BOT_NAME,
         attachments=attachments
     )
@@ -89,7 +88,6 @@ def send_message(channel_id, attachments):
     res = slack_client.api_call(
         "chat.postMessage",
         channel=channel_id,
-        icon_emoji=SLACK_BOT_ICON,
         username=SLACK_BOT_NAME,
         attachments=attachments
     )

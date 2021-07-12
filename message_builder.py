@@ -28,6 +28,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SLACK_IN_PROGRESS_EMOJI = os.getenv("SLACK_IN_PROGRESS_EMOJI", ":building_contruction:")
+GITHUB_ICON             = os.getenv("GITHUB_ICON",":github:")
 
 STATE_ICONS = {
   'CANCELED': ":no_entry:",
@@ -171,13 +172,19 @@ class MessageBuilder:
                 logger.info('SOURCE UPDATE')
                 pipeline_execution_id, pipeline_name = get_pipeline_metadata(event)
                 infos = find_github_info(pipeline_execution_id, pipeline_name)
+
                 for info in infos:
-                    idx, field = self.get_or_create_field(info['name'])
-                    field['value'] = "\n".join([f"{key}: {info[key]}" for key in GITHUB_INFO_DISPLAY_ORDER])
-                    # self.update_field(idx, field)
+                    self.create_github_block(info)
+
 
         if self.fields[0]['value'] == 'SUCCEEDED':
             self.complete_pipeline()
+
+    def create_github_block(self,infos):
+        text = f"{GITHUB_ICON} `{infos['repo']}`\non `{infos['branch']}` by {infos['author']}"
+        index, field = self.get_or_create_field(text, short=True)
+        field['value'] = f"<{infos['commit_link']}|{infos['commit_message']}>"
+        self.update_field(index, field)
 
     def update_deploy_task_definition(self, task_def):
         task_def_name = task_def.split(':')[0]
@@ -312,6 +319,8 @@ class MessageBuilder:
 
     def get_or_create_field(self, title, short=True):
         index, field = self.get_field(title)
+        logger.info('index, field')
+        logger.info(f'{index}, {field}')
         if field is not None:
             return index, field
 
@@ -386,6 +395,7 @@ class MessageBuilder:
     def build_message(self):
         return [
             {
+                "mrkdwn_in": ["fields"],
                 "fields": self.fields,
                 "color": self.color(),
                 "footer": self.pipeline_execution_id,
