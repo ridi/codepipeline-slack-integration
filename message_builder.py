@@ -181,7 +181,8 @@ class MessageBuilder:
             self.complete_pipeline()
 
     def create_github_block(self,infos):
-        text = f"{GITHUB_ICON} `{infos['repo']}`\non `{infos['branch']}` by {infos['author']}"
+        # slack strips all newllines in field.title
+        text = f"{GITHUB_ICON} `{infos['repo']}` on `{infos['branch']}` by {infos['author']}"
         index, field = self.get_or_create_field(text, short=True)
         field['value'] = f"<{infos['commit_link']}|{infos['commit_message']}>"
         self.update_field(index, field)
