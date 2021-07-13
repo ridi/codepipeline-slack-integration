@@ -28,7 +28,7 @@ def find_github_info(pipeline_execution_id, pipeline_name):
     for revision in revisions:
         info = [x for x in infos if x['name'] == revision['name']][0]
         commit_message = json.loads(revision['revisionSummary'])['CommitMessage']
-        info['commit_message'] = commit_message
+        info['commit_message'] = commit_message.split('\n')[0]
 
         query = parse_qs(urlparse(revision['revisionUrl']).query)
         info['commit_link'] = f"https://github.com/{query.get('FullRepositoryId')[0]}/commit/{query.get('Commit')[0]}"
