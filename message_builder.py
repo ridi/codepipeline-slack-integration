@@ -108,13 +108,6 @@ CODEBUILD_PHASE_DEPENDENCY = {
     },
 }
 
-GITHUB_INFO_DISPLAY_ORDER = [
-    'repo',
-    'branch',
-    'author',
-    'commit_message',
-    'commit_link',
-]
 
 class MessageBuilder:
     pipeline_name = None
