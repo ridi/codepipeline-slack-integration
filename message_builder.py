@@ -23,21 +23,27 @@ from slack_helper import (
 from github_helper import (
     find_github_info
 )
+from aws_client import (
+    find_pipeline_schema
+)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SLACK_IN_PROGRESS_EMOJI = os.getenv("SLACK_IN_PROGRESS_EMOJI", ":building_contruction:")
+SLACK_IN_RESUMED_EMOJI = os.getenv("SLACK_IN_RESUMED_EMOJI", ":arrow_forward:")
+SLACK_IN_STOPPED_EMOJI = os.getenv("SLACK_IN_STOPPED_EMOJI", ":double_vertical_bar:")
+SLACK_IN_SUPERSEDED_EMOJI = os.getenv("SLACK_IN_SUPERSEDED_EMOJI", ":repeat:")
 GITHUB_ICON             = os.getenv("GITHUB_ICON",":github:")
 
 STATE_ICONS = {
   'CANCELED': ":no_entry:",
   'FAILED': ":x:",
-  'RESUMED': "",
+  'RESUMED': SLACK_IN_RESUMED_EMOJI,
   'STARTED': SLACK_IN_PROGRESS_EMOJI,
-  'STOPPED': ":x:",
+  'STOPPED': SLACK_IN_STOPPED_EMOJI,
   'SUCCEEDED': ":white_check_mark:",
-  'SUPERSEDED': "",
+  'SUPERSEDED': SLACK_IN_SUPERSEDED_EMOJI,
 }
 
 STATE_COLORS = {
@@ -108,6 +114,20 @@ CODEBUILD_PHASE_DEPENDENCY = {
     },
 }
 
+STAGE_STATE_ORDER = {
+    "Default" : -99,
+
+    "STARTED" : 1,
+
+    "STOPPING" : 2,
+
+    "STOPPED" : 3,
+    "RESUMED" : 3,
+
+    "CANCELED" : 4,
+    "FAILED" : 4,
+    "SUCCEEDED" : 4
+}
 
 class MessageBuilder:
     pipeline_name = None
@@ -141,37 +161,50 @@ class MessageBuilder:
             self.fields[0]['value'] = get_pipeline_states(event)
 
         if is_pipeline_stage_state_update(event):
-            current_stage = get_pipeline_stages(event)
-            current_state = get_pipeline_states(event)
-
-            stages_dict = {}
-
-            index, field_refernece = self.get_or_create_field('Stages')
-            stages_string = field_refernece['value']
-
-            if len(stages_string) > 0:
-                for stage_info_string in stages_string.split('\t'):
-                    icon, stage_name = stage_info_string.split(" ")
-                    stages_dict[stage_name] = icon
-
-            stages_dict[current_stage] = STATE_ICONS[current_state]
-
-            field_refernece['value'] = "\t".join([f"{icon} {stage}" for stage, icon in stages_dict.items()])
-            self.update_field(index, field_refernece)
+            self.update_stage_field(event)
 
             # add github info
             logger.info('PIPELINE STAGE UPDATE')
-            if current_stage == 'Source':
+            if get_pipeline_stages(event) == 'Source':
                 logger.info('SOURCE UPDATE')
                 pipeline_execution_id, pipeline_name = get_pipeline_metadata(event)
                 infos = find_github_info(pipeline_execution_id, pipeline_name)
-
                 for info in infos:
                     self.create_github_block(info)
 
-
         if self.fields[0]['value'] == 'SUCCEEDED':
             self.complete_pipeline()
+
+    def update_stage_field(self, event):
+        current_stage = get_pipeline_stages(event)
+        current_state = get_pipeline_states(event)
+
+        stages_dict = {}
+
+        index, field_refernece = self.get_or_create_field('Stages')
+        stages_string = field_refernece['value']
+
+        if len(stages_string) > 0:
+            for stage_info_string in stages_string.split('\t'):
+                icon, stage_name = stage_info_string.split(" ")
+                stages_dict[stage_name] = icon
+
+        stages_progress_dict = dict()
+        for stage,icon in stages_dict.items():
+            for k,v in STATE_ICONS.items():
+                if v == icon:
+                    stages_progress_dict[stage] = k
+                    break
+
+        # prevent state going backwards
+        # AWS CloudWatchEvent doesn't guarantee the event order
+        if STAGE_STATE_ORDER[current_state] >= STAGE_STATE_ORDER[stages_progress_dict.get(current_stage, 'Default')]:
+            stages_progress_dict[current_stage] = current_state
+        stages_dict[current_stage] = STATE_ICONS[stages_progress_dict[current_stage]]
+
+        pipeline_stage_order = find_pipeline_schema(get_pipeline_metadata(event)[1])
+        field_refernece['value'] = "\t".join([f"{stages_dict[stage]} {stage}" for stage in pipeline_stage_order if stage in stages_dict])
+        self.update_field(index, field_refernece)
 
     def create_github_block(self,infos):
         # slack strips all newllines in field.title

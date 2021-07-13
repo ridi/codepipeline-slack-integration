@@ -29,3 +29,9 @@ def find_pipeline_from_build(pipeline_name, build_id):
                 return stage_name, pipeline_execution_id, action_state
 
     return None, None, None
+
+
+def find_pipeline_schema(pipeline_name):
+    res = client.get_pipeline(name=pipeline_name)
+    schema = [stage['name'] for stage in res['pipeline']['stages']]
+    return schema
