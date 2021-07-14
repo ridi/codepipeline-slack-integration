@@ -61,8 +61,16 @@ functions:
           event:
             source:
               - aws.codepipeline
-              - aws.codebuild
+            detail-type:
+              - 'CodePipeline Pipeline Execution State Change'
+              - 'CodePipeline Stage Execution State Change'
+              - 'CodePipeline Action Execution State Change'
+      - cloudwatchEvent:
+          event:
+            source:
               - aws.codedeploy
+            detail-type:
+              - 'AWS API Call via CloudTrail'
 
   ecs-notifier:
       handler: notifier.run
