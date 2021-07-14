@@ -71,6 +71,9 @@ functions:
               - aws.codedeploy
             detail-type:
               - 'AWS API Call via CloudTrail'
+            detail:
+              eventName:
+                - 'CreateDeployment'
 
   ecs-notifier:
       handler: notifier.run
