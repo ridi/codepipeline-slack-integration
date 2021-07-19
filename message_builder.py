@@ -165,7 +165,7 @@ class MessageBuilder:
 
             # add github info
             logger.info('PIPELINE STAGE UPDATE')
-            if get_pipeline_stages(event) == 'Source':
+            if event.get('detail-type') == "CodePipeline Action Execution State Change" and event.get_pipeline_stages(event) == 'Source':
                 logger.info('SOURCE UPDATE')
                 pipeline_execution_id, pipeline_name = get_pipeline_metadata(event)
                 infos = find_github_info(pipeline_execution_id, pipeline_name)
