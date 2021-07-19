@@ -10,6 +10,7 @@ slack_client = SlackClient(os.getenv("SLACK_BOT_TOKEN"))
 SLACK_CHANNEL = os.getenv("SLACK_CHANNEL", "builds_test")
 SLACK_BOT_NAME = os.getenv("SLACK_BOT_NAME", "PipelineBot")
 SLACK_BOT_ICON = os.getenv("SLACK_BOT_ICON", ":robot_face:")
+SLACK_CHANNEL_ID = os.getenv('SLACK_CHANNEL_OVERRIDE_CHANNEL_ID')
 
 def find_slack_message_for_update(pipeline_execution_id):
     channel_id = find_channel_id(SLACK_CHANNEL)
@@ -33,6 +34,14 @@ def find_slack_message_for_update(pipeline_execution_id):
 
 
 def find_channel_id(channel_name):
+    # slack api does not provide effcient search for channel(conversation) id by channel name
+    # an option to override the api call if channel_id is provided
+    # slack sometimes have issue with channel id changing randomly
+    # use with caution
+    # ALSO there's a ratelimit to this api
+    if SLACK_CHANNEL_ID:
+        return SLACK_CHANNEL_ID
+
     # 최신 메세지가 가장 위쪽에 있게 줌
     res = slack_client.api_call("conversations.list", exclude_archived=1, limit=1000)
 
