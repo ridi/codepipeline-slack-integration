@@ -73,6 +73,7 @@ functions:
     package:
       patterns:
         - '!terraform'
+        - '!node_modules'
 
 plugins:
   - serverless-python-requirements
