@@ -1,8 +1,15 @@
 import re
 import logging
+import json
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+def parse_sqs_message(message):
+    logger.info(json.dumps(message, indent=2))
+    notification = json.loads(message['Records'][0]['body'])
+    return json.loads(notification['Message'])
+
 
 def get_pipeline_metadata(event):
     detail = event['detail']

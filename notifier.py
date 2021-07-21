@@ -3,6 +3,7 @@ import logging
 import json
 
 from event_parser import (
+    parse_sqs_message,
     get_pipeline_metadata,
     get_pipeline_metadata_from_codebuild,
     is_codebuild_phases_updatable,
@@ -31,7 +32,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def run(event, context):
+def run(message, context):
+    event = parse_sqs_message(message)
     logger.info('event received.')
     logger.info(json.dumps(event, indent=2))
     if event['detail-type'] == 'AWS API Call via CloudTrail' and event['source'] == 'aws.codebuild':

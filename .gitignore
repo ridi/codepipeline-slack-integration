@@ -23,3 +23,10 @@ node_modules/
 .idea/
 
 .env
+
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform/
+**/.terraform
+**/.terraform*

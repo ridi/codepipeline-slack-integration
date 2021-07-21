@@ -25,7 +25,7 @@ this repo is base on [ogrodnek/code-pipeline-slack](https://github.com/ogrodnek/
 - CodePipeline status to slack message
 - One message per one pipeline execution.
 - Codebuild dashboard link button.
-- All pipeline's status integrate to slack. 
+- All pipeline's status integrate to slack.
 
 ## How to install
 
@@ -102,3 +102,11 @@ serverless deploy
 
 Done!
 
+---
+# HOW TO DEPLOY
+1. setup .env file
+2. run commands
+```
+$ terrafrom apply
+$ serverless deploy
+```

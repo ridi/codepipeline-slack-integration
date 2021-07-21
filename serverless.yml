@@ -15,6 +15,9 @@
 
 service: codepipeline-slack
 
+package:
+  individually: true
+
 provider:
   name: aws
   runtime: python3.8
@@ -42,6 +45,12 @@ provider:
           Action:
             - "dynamodb:*"
           Resource: ${env:DYNAMODB_ARN}
+        - Effect: "Allow"
+          Action:
+            - "sqs:ReceiveMessage"
+            - "sqs:DeleteMessage"
+            - "sqs:GetQueueAttributes"
+          Resource: '*'
 
   environment:
     SLACK_TOKEN: ${env:SLACK_TOKEN}
@@ -57,34 +66,14 @@ functions:
     timeout: 30
     reservedConcurrency: 1
     events:
-      - cloudwatchEvent:
-          event:
-            source:
-              - aws.codepipeline
-            detail-type:
-              - 'CodePipeline Pipeline Execution State Change'
-              - 'CodePipeline Stage Execution State Change'
-              - 'CodePipeline Action Execution State Change'
-      - cloudwatchEvent:
-          event:
-            source:
-              - aws.codedeploy
-            detail-type:
-              - 'AWS API Call via CloudTrail'
-            detail:
-              eventName:
-                - 'CreateDeployment'
+      - sqs:
+          arn: ${env:SQS_ARN}
+          batchSize: 1
+          enabled: true
+    package:
+      patterns:
+        - '!terraform'
 
-  ecs-notifier:
-      handler: notifier.run
-      memorySize: 256
-      timeout: 30
-      reservedConcurrency: 1
-      events:
-        - cloudwatchEvent:
-            event:
-              source:
-                - aws.ecs
 plugins:
   - serverless-python-requirements
   - serverless-dotenv-plugin
