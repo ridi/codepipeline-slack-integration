@@ -47,12 +47,14 @@ resource "aws_sns_topic" "codepipeline_events_sns" {
 EOF
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "sns_topic_policy" {
   statement {
     sid = "1"
     principals {
       type        = "AWS"
-      identifiers = ["*"]
+      identifiers = [ data.aws_caller_identity.current.account_id ]
     }
     actions = [
       "SNS:Publish",
@@ -86,10 +88,6 @@ resource "aws_sns_topic_policy" "default" {
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }
 
-# data "aws_iam_user" "root" {
-#   user_name = "root"
-# }
-
 resource "aws_sqs_queue" "codepipeline_slack_dlq" {
   name                       = "codepipeline-slack-dlq"
   visibility_timeout_seconds = 180
@@ -112,8 +110,6 @@ resource "aws_sqs_queue" "codepipeline_slack_queue" {
     maxReceiveCount     = 15
   })
 }
-
-data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "sqs_policy" {
   statement {
