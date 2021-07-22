@@ -108,5 +108,6 @@ Done!
 2. run commands
 ```
 $ terrafrom apply
+$ serverless package
 $ serverless deploy
 ```
