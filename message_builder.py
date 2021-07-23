@@ -30,11 +30,12 @@ from aws_client import (
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SLACK_IN_PROGRESS_EMOJI = os.getenv("SLACK_IN_PROGRESS_EMOJI", ":building_contruction:")
-SLACK_IN_RESUMED_EMOJI = os.getenv("SLACK_IN_RESUMED_EMOJI", ":arrow_forward:")
-SLACK_IN_STOPPED_EMOJI = os.getenv("SLACK_IN_STOPPED_EMOJI", ":double_vertical_bar:")
+SLACK_IN_PROGRESS_EMOJI   = os.getenv("SLACK_IN_PROGRESS_EMOJI", ":building_contruction:")
+SLACK_IN_RESUMED_EMOJI    = os.getenv("SLACK_IN_RESUMED_EMOJI", ":arrow_forward:")
+SLACK_IN_STOPPED_EMOJI    = os.getenv("SLACK_IN_STOPPED_EMOJI", ":double_vertical_bar:")
 SLACK_IN_SUPERSEDED_EMOJI = os.getenv("SLACK_IN_SUPERSEDED_EMOJI", ":repeat:")
-GITHUB_ICON             = os.getenv("GITHUB_ICON",":github:")
+GITHUB_ICON               = os.getenv("GITHUB_ICON",":github:")
+REGION                    = os.getenv("AWS_REGION", "ap-northeast-2")
 
 STATE_ICONS = {
   'CANCELED': ":no_entry:",
@@ -218,12 +219,13 @@ class MessageBuilder:
     def update_deploy_task_definition(self, task_def):
         task_def_name = task_def.split(':')[0]
         task_def_revision = task_def.split(':')[1]
-        region = os.getenv("AWS_REGION", "ap-northeast-2")
-        task_def_link = f"https://{region}.console.aws.amazon.com/ecs/home?region={region}#/taskDefinitions/{task_def_name}/{task_def_revision}"
+        task_def_link = f"https://{REGION}.console.aws.amazon.com/ecs/home?region={REGION}#/taskDefinitions/{task_def_name}/{task_def_revision}"
 
         index, field = self.get_or_create_field('Task Definition', short=True)
         field['value'] = f"<{task_def_link}|{task_def}>"
         self.update_field(index, field)
+
+
 
     def update_build_stage_info(self, stage_name, phases, action_states, build_project_name):
         external_execution_url = action_states['latestExecution']['externalExecutionUrl']
@@ -422,12 +424,13 @@ class MessageBuilder:
             return STATE_COLORS['DEFAULT']
 
     def build_message(self):
+        pipelink_link = f"https://{REGION}.console.aws.amazon.com/codesuite/codepipeline/pipelines/{self.pipeline_name}/view"
         return [
             {
-                "mrkdwn_in": ["fields"],
+                "mrkdwn_in": ["fields", "footer"],
                 "fields": self.fields,
                 "color": self.color(),
-                "footer": self.pipeline_execution_id,
+                "footer": f"<{pipelink_link}|{self.pipeline_execution_id}>",
                 "actions": self.actions
             }
         ]

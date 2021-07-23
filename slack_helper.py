@@ -26,8 +26,7 @@ def find_slack_message_for_update(pipeline_execution_id):
         for attachment in attachments:
             if 'footer' not in attachment:
                 continue
-
-            if attachment['footer'] == pipeline_execution_id:
+            if attachment['footer'].split('|')[-1].split('>')[0] == pipeline_execution_id:
                 return message
 
     return None
