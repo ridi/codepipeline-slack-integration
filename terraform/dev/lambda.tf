@@ -21,14 +21,14 @@ module "lambda_function" {
 
   source_path = [
     {
-      path             = "../src/"
+      path             = "../../src/"
     }
   ]
 
   store_on_s3 = true
   s3_bucket   = aws_s3_bucket.default.id
 
-  environment_variables = { for tuple in regexall("(.*)=(.*)", file("../.env")) : tuple[0] => tuple[1] }
+  environment_variables = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => tuple[1] }
 
   attach_policy_json = true
   policy_json = <<EOF
