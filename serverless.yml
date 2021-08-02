@@ -53,7 +53,6 @@ provider:
           Resource: '*'
 
   environment:
-    SLACK_TOKEN: ${env:SLACK_TOKEN}
     SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
     SLACK_BOT_NAME: ${env:SLACK_BOT_NAME}
     SLACK_BOT_ICON: ${env:SLACK_BOT_ICON}

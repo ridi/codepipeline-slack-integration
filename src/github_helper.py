@@ -2,14 +2,14 @@ import os
 import json
 from urllib.parse import urlparse, parse_qs
 import boto3
-from github import Github
+import requests as re
 import aws_client
 import logging
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-github_client = Github(os.getenv('GITHUB_ACCESS_TOKEN'))
+GITHUB_ACCESS_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
 
 
 def find_github_info(pipeline_execution_id, pipeline_name):
@@ -36,7 +36,13 @@ def find_github_info(pipeline_execution_id, pipeline_name):
     # author
     for info in infos:
         sha = info['commit_link'].split('/')[-1]
-        author = github_client.get_repo(info['repo']).get_commit(sha=sha).author
-        info['author'] = author.name or author.login
+        url = f"/repos/{info['repo']}/commits/{sha}"
+        author = github_api(url).get('commit').get('author').get('name')
+        info['author'] = author
 
     return infos
+
+def github_api(url):
+    r = re.get('https://api.github.com'+url, auth=('token',GITHUB_ACCESS_TOKEN))
+    r_json = json.loads(r.text)
+    return r_json
