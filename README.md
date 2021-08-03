@@ -81,33 +81,12 @@ you need to register your environment variables in .env file.
 - SLACK_BOT_ICON: your slack bot's icon. default is `:robot_face:`
 - SLACK_IN_PROGRESS_EMOJI: emoji for codebuild in progress phase. start and endswith `:`
 
-
-
-### 4. Serverless install and deploy
-
-```bash
-npm insatll -g serverless
-npm install
-```
-
-login to AWS in serverless and deploy.
-
-Document (aws credential for serverless): <https://serverless.com/framework/docs/providers/aws/guide/credentials/>
-
-```bash
-serverless deploy
-```
-
-
-
-Done!
-
 ---
+
 # HOW TO DEPLOY
-1. setup .env file
-2. run commands
 ```
-$ terrafrom apply
-$ serverless package
-$ serverless deploy
+# 1. set up .env file
+
+# 2. make aws resources
+$ terraform apply
 ```

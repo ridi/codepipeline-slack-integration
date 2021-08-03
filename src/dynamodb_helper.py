@@ -6,7 +6,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table(os.getenv('DYNAMODB_ARN').split('/')[-1])
+table = os.getenv('DYNAMODB_TABLE')
 
 
 def find_or_create_item(deployment_id, *, pipeline_id=None, task_def=None):
