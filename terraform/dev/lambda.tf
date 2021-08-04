@@ -1,7 +1,7 @@
 # iam, lambda, dynamodb
 
 resource "aws_s3_bucket" "default" {
-  bucket = "codepipeline-slack-bot-s3-dev"
+  bucket = "codepipeline-slack-bot-dev-ap-northeast-2-7162e6c8"
   acl    = "private"
 
   tags = {
