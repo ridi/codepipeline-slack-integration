@@ -119,7 +119,7 @@ EOF
   timeout = 30
 
   tags = {
-    Name = "lambda-with-layer"
+    monitor = "false"
   }
 }
 
