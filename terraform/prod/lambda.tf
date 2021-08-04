@@ -28,7 +28,7 @@ module "lambda_function" {
   store_on_s3 = true
   s3_bucket   = aws_s3_bucket.default.id
 
-  environment_variables = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => tuple[1] }
+  environment_variables = { for tuple in regexall("(.*)=(.*)", file(".env")) : tuple[0] => tuple[1] }
 
   attach_policy_json = true
   policy_json = <<EOF
