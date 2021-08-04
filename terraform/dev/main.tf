@@ -18,50 +18,66 @@ provider "aws" {
   region  = "ap-northeast-2"
 }
 
+
+data "aws_iam_policy_document" "instance-assume-role-policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "sns_success_iam" {
   name = "SNSSuccessFeedback"
+  assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            Effect = "Allow"
-            Action = [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:PutMetricFilter",
-                "logs:PutRetentionPolicy"
-            ],
-            Resource: [
-                "*"
-            ]
-        }
-    ]
-  })
+  inline_policy {
+      name = "oneClick_SNSSuccessFeedback"
+      policy = jsonencode({
+          Version = "2012-10-17"
+          Statement = [
+              {
+                  Effect = "Allow"
+                  Action = [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents",
+                      "logs:PutMetricFilter",
+                      "logs:PutRetentionPolicy"
+                  ]
+                  Resource: "*"
+              },
+          ]
+      })
+  }
 }
 
 resource "aws_iam_role" "sns_failure_iam" {
   name = "SNSFailureFeedback"
+  assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            Effect = "Allow"
-            Action = [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:PutMetricFilter",
-                "logs:PutRetentionPolicy"
-            ],
-            Resource: [
-                "*"
-            ]
-        }
-    ]
-  })
+  inline_policy {
+      name = "oneClick_SNSFailureFeedback"
+      policy = jsonencode({
+          Version = "2012-10-17"
+          Statement = [
+              {
+                  Effect = "Allow"
+                  Action = [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents",
+                      "logs:PutMetricFilter",
+                      "logs:PutRetentionPolicy"
+                  ]
+                  Resource: "*"
+              },
+          ]
+      })
+  }
 }
 
 resource "aws_sns_topic" "codepipeline_events_sns" {
