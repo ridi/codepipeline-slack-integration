@@ -148,7 +148,7 @@ resource "aws_sqs_queue" "codepipeline_slack_queue" {
   receive_wait_time_seconds  = 0
 
   redrive_policy = jsonencode({
-    deadLetterTargetArn = "${aws_sqs_queue.codepipeline_slack_dlq.arn}"
+    deadLetterTargetArn = aws_sqs_queue.codepipeline_slack_dlq.arn
     maxReceiveCount     = 15
   })
 }
