@@ -31,3 +31,6 @@ node_modules/
 **/.terraform
 **/.terraform*
 terraform/builds
+terraform/dev/builds
+terraform/prod/builds
+
