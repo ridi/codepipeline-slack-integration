@@ -22,10 +22,10 @@ resource "aws_iam_role" "sns_success_iam" {
   name = "SNSSuccessFeedback"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",
+    Version = "2012-10-17"
     Statement = [
         {
-            Effect = "Allow",
+            Effect = "Allow"
             Action = [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
@@ -45,10 +45,10 @@ resource "aws_iam_role" "sns_failure_iam" {
   name = "SNSFailureFeedback"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",
+    Version = "2012-10-17"
     Statement = [
         {
-            Effect = "Allow",
+            Effect = "Allow"
             Action = [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
