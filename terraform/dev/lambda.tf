@@ -41,7 +41,7 @@ module "lambda_function" {
                 "logs:CreateLogGroup"
             ],
             "Resource": [
-                "arn:aws:logs:ap-northeast-2:119269236144:log-group:/aws/lambda/codepipeline-slack-dev*:*"
+                "arn:aws:logs:ap-northeast-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/codepipeline-slack-dev*:*"
             ],
             "Effect": "Allow"
         },
@@ -50,7 +50,7 @@ module "lambda_function" {
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:ap-northeast-2:119269236144:log-group:/aws/lambda/codepipeline-slack-dev*:*:*"
+                "arn:aws:logs:ap-northeast-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/codepipeline-slack-dev*:*:*"
             ],
             "Effect": "Allow"
         },
@@ -80,7 +80,7 @@ module "lambda_function" {
             "Action": [
                 "dynamodb:*"
             ],
-            "Resource": "arn:aws:dynamodb:ap-northeast-2:119269236144:table/codepipeline-slack-integration",
+            "Resource": "arn:aws:dynamodb:ap-northeast-2:${data.aws_caller_identity.current.account_id}:table/codepipeline-slack-integration",
             "Effect": "Allow"
         },
         {
@@ -99,7 +99,7 @@ module "lambda_function" {
                 "sqs:GetQueueAttributes"
             ],
             "Resource": [
-                "arn:aws:sqs:ap-northeast-2:119269236144:codepipeline-slack-queue"
+                "arn:aws:sqs:ap-northeast-2:${data.aws_caller_identity.current.account_id}:codepipeline-slack-queue"
             ],
             "Effect": "Allow"
         }
