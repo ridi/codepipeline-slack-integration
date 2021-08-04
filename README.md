@@ -85,7 +85,7 @@ you need to register your environment variables in .env file.
 
 # HOW TO DEPLOY
 ```
-# 1. set up .env file
+# 1. set up .env file in terraform/{env} dir using .env.template file
 
 # 2. make aws resources
 $ terraform apply
