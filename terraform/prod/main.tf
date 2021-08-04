@@ -18,20 +18,58 @@ provider "aws" {
   region  = "ap-northeast-2"
 }
 
-data "aws_iam_role" "sns_success_iam" {
+resource "aws_iam_role" "sns_success_iam" {
   name = "SNSSuccessFeedback"
+
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:PutMetricFilter",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+  })
 }
 
-data "aws_iam_role" "sns_failure_iam" {
+resource "aws_iam_role" "sns_failure_iam" {
   name = "SNSFailureFeedback"
+
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:PutMetricFilter",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+  })
 }
 
 resource "aws_sns_topic" "codepipeline_events_sns" {
   name = "codepipeline_events_sns"
 
   sqs_success_feedback_sample_rate = 100
-  sqs_success_feedback_role_arn    = data.aws_iam_role.sns_success_iam.arn
-  sqs_failure_feedback_role_arn    = data.aws_iam_role.sns_failure_iam.arn
+  sqs_success_feedback_role_arn    = aws_iam_role.sns_success_iam.arn
+  sqs_failure_feedback_role_arn    = aws_iam_role.sns_failure_iam.arn
 
   delivery_policy = <<EOF
 {
